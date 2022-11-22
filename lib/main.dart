@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './components/HomeScreen.dart';
 import './components/CoinsetDetailsScreen.dart';
+import './components/CoinsetsScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +24,7 @@ class _MyAppState extends State<MyApp> {
 
   final List <Widget> _screenOptions = <Widget>[
     const HomeScreen(),
-    const CoinsetDetailsScreen()
+    const Coinsets()
   ];
 
   @override
@@ -54,7 +55,12 @@ class _MyAppState extends State<MyApp> {
               onTap: onTap,
             ),
             appBar: AppBar(
-              title: Text("CoinDex",style: TextStyle(fontSize: 16)),
+              title: Row(
+                children: [
+                  Image.asset("assets/images/logo.png",width: 60),
+                  Text("oindex")
+                ],
+              ),
               backgroundColor: Color(0x00f5f5f5),
             ),
         )
