@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
             appBar: AppBar(
               title: Row(
                 children: [
-                  Image.asset("assets/images/logo.png",width: 60),
+                  Image.asset("assets/images/logo.png",height: 30,fit:BoxFit.fitHeight),
                   Text("oindex")
                 ],
               ),

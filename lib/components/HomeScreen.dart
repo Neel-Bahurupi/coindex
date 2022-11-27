@@ -1,3 +1,4 @@
+import 'package:coin_dex/components/PortfolioScreen.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
 import 'package:flutter/material.dart';
 import "ReusableCard.dart";
@@ -13,29 +14,36 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ReusableCard(
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start ,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  Text(
-                    "My Account",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Color.fromRGBO(146, 145, 177, 1)
+          GestureDetector(
+              onTap: (){Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PortfolioScreen())
+              );
+            },
+            child: ReusableCard(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start ,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: const [
+                    Text(
+                      "My Account",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Color.fromRGBO(146, 145, 177, 1)
+                      ),
                     ),
-                  ),
-                  Text(
-                    "\$1200",
-                    style: TextStyle(
-                        fontSize: 32,
-                        color:Color.fromRGBO(212, 212, 212, 1)
-                    ),
-                  )
-                ],
-              ),
-              128,
-              22
+                    Text(
+                      "\$1200",
+                      style: TextStyle(
+                          fontSize: 32,
+                          color:Color.fromRGBO(212, 212, 212, 1)
+                      ),
+                    )
+                  ],
+                ),
+                128,
+                22
+            ),
           ),
           const SizedBox(height:24),
           const Text(
@@ -58,7 +66,7 @@ class HomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                        "Chutiya NFT",
+                        "NFT",
                         style : TextStyle(
                           fontSize: 20,
                         )

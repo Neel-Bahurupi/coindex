@@ -12,6 +12,7 @@ class ReusableCard extends StatelessWidget {
         child: child,
         padding: EdgeInsets.all(padding),
         height: height,
+        margin: EdgeInsets.fromLTRB(0, 1, 0, 1),
         decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [

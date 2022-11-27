@@ -36,6 +36,7 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,11 +105,70 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
                       // Enable data label
                       dataLabelSettings: const DataLabelSettings(isVisible: false))
                 ]),
-
-
+            Container(
+              margin: EdgeInsets.all(22),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Constituents",style: TextStyle(fontSize: 20),),
+                  SizedBox(height: 25,),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                    child: Table(
+                      children: [
+                        TableRow(
+                          children: [
+                            Text("Name",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1)),),
+                            Text("Holdings %",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1))),
+                            Text("1D change",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1)))
+                          ]
+                        ),
+                        TableRow(
+                            children: [
+                              Text("Ethereum",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text("10",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text("14%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),)
+                            ]
+                        ),
+                        TableRow(
+                            children: [
+                              Text("NFT",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text("80",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text("12%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),)
+                            ]
+                        ),
+                        TableRow(
+                            children: [
+                              Text("NFT",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text("80",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text("12%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),)
+                            ]
+                        ),
+                        TableRow(
+                            children: [
+                              Text("NFT",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text("80",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text("12%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),)
+                            ]
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
+      bottomSheet: Container(
+        width: MediaQuery.of(context).size.width,
+        child: TextButton(
+          child: Text("Invest",style: TextStyle(color: Colors.white),),
+          onPressed: (){},
+        ),
+        color: Color.fromRGBO(31, 31, 57, 0.5),
+      ),
+
     );
   }
 }
