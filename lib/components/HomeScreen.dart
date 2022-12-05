@@ -1,12 +1,74 @@
 import 'package:coin_dex/components/PortfolioScreen.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
 import 'package:flutter/material.dart';
+import 'CoinsetsScreen.dart';
 import "ReusableCard.dart";
 import "CoinsetDetailsScreen.dart";
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  void onTap(int index){
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  final List <Widget> _screenOptions = <Widget>[
+    const HomePage(),
+    const Coinsets()
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home"
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.money),
+              label: "Coinset"
+          )
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        backgroundColor: Colors.black,
+        onTap: onTap,
+      ),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset("assets/images/logo.png",height: 30,fit:BoxFit.fitHeight),
+            const Text("oindex")
+          ],
+        ),
+        backgroundColor: const Color(0x00f5f5f5),
+      ),
+      body: SafeArea(
+          child: _screenOptions.elementAt(_selectedIndex)
+      )
+    );
+  }
+}
+class HomePage extends StatefulWidget{
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => HomePageState();
+
+}
+
+class HomePageState extends State<HomePage>{
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -15,10 +77,10 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           GestureDetector(
-              onTap: (){Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PortfolioScreen())
-              );
+            onTap: (){Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PortfolioScreen())
+            );
             },
             child: ReusableCard(
                 Column(
@@ -132,4 +194,5 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
 }
