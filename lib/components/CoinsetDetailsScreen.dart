@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:http/http.dart' as http;
 
 
 class CoinsetDetailsScreen extends StatefulWidget {
@@ -10,20 +13,23 @@ class CoinsetDetailsScreen extends StatefulWidget {
   _CoinsetDetailsScreenState createState() => _CoinsetDetailsScreenState();
 }
 
-class _SalesData{
-  _SalesData(this.year,this.sales);
-  String year;
-  int sales;
+class _CoinData{
+  _CoinData(this.date,this.price);
+  String date;
+  double price;
+
+  String getDate(){
+    return date;
+  }
+  double getPrice(){
+    return price;
+  }
 }
 
 class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
-  List<_SalesData> data = [
-    _SalesData('Jan', 35),
-    _SalesData('Feb', 28),
-    _SalesData('Mar', 34),
-    _SalesData('Apr', 32),
-    _SalesData('May', 40)
-  ];
+  List<_CoinData> data = [];
+  String percentageChange = "0";
+  List<String> coins = ["BTC","ETH"];
 
   late CrosshairBehavior _crosshairBehavior;
 
@@ -34,8 +40,40 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
         enable: true
     );
     super.initState();
+    loadCoinData();
+    print("hi");
   }
 
+  void loadCoinData()async{
+    List<_CoinData> coin_data = [];
+
+    for(int j=0; j<coins.length;j++){
+
+      var res = await http.get(Uri.parse("https://luminous-florentine-4dc632.netlify.app/coinPriceHistory/" + coins[j]));
+      var result = json.decode(res.body);
+      var price_history = result[0]['price_history'];
+
+
+      for(var i=0;i<price_history.length;i++){
+        var date = DateTime.parse(price_history[i]['date']);
+        String string_date = (date.day).toString() + "/" + (date.month).toString() + "/" + (date.year).toString();
+        double price = price_history[i]['usd'];
+        if(j==0)coin_data.add(_CoinData(string_date, price));
+        else{
+          coin_data[j] = _CoinData(coin_data[j].getDate(), coin_data[j].getPrice() + price);
+        }
+      }
+    }
+
+    double first = coin_data[0].getPrice(), last = coin_data[coin_data.length - 1].getPrice();
+    double change = (last - first)/first ;
+    print(change);
+    setState(() {
+      data = coin_data;
+      percentageChange = change.toStringAsFixed(3);
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +117,9 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
                             12),
                         ReusableCard(
                             Row(
-                              children: const [
-                                Icon(Icons.arrow_drop_down,color: Colors.red,),
-                                Text("12.3%", style: TextStyle(fontSize: 18,color: Colors.red)),
+                              children:  [
+                                Icon((double.parse(percentageChange) < 0 ? Icons.arrow_drop_down : Icons.arrow_drop_up),color: ((double.parse(percentageChange) < 0 ? Colors.red : Colors.green))),
+                                Text(percentageChange, style: TextStyle(fontSize: 18,color: (double.parse(percentageChange) < 0 ? Colors.red : Colors.green) )),
                               ],
                             ),
                             50,
@@ -95,13 +133,13 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
                 crosshairBehavior: _crosshairBehavior,
                 tooltipBehavior: TooltipBehavior(enable: true),
 
-                primaryXAxis: CategoryAxis(),
-                series: <ChartSeries<_SalesData, String>>[
-                  LineSeries<_SalesData, String>(
+                primaryXAxis: CategoryAxis(isVisible:false),
+                series: <ChartSeries<_CoinData, String>>[
+                  LineSeries<_CoinData, String>(
                       dataSource: data,
-                      xValueMapper: (_SalesData sales, _) => sales.year,
-                      yValueMapper: (_SalesData sales, _) => sales.sales,
-                      name: 'Sales',
+                      xValueMapper: (_CoinData price, _) => price.date,
+                      yValueMapper: (_CoinData price, _) => price.price,
+                      name: 'Price',
                       // Enable data label
                       dataLabelSettings: const DataLabelSettings(isVisible: false))
                 ]),
@@ -164,7 +202,9 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
         width: MediaQuery.of(context).size.width,
         child: TextButton(
           child: Text("Invest",style: TextStyle(color: Colors.white),),
-          onPressed: (){},
+          onPressed: (){
+            loadCoinData();
+          },
         ),
         color: Color.fromRGBO(31, 31, 57, 0.5),
       ),
