@@ -1,7 +1,10 @@
 import 'package:coin_dex/components/PortfolioScreen.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
+import 'package:coin_dex/models/Coin.dart';
+import 'package:coin_dex/models/CoinSet.dart';
 import 'package:coin_dex/services/smart_contract_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:web3dart/credentials.dart';
 import 'CoinsetsScreen.dart';
 import "ReusableCard.dart";
 import "CoinsetDetailsScreen.dart";
@@ -15,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+
 
   void onTap(int index){
     setState(() {
@@ -73,8 +77,39 @@ class HomePageState extends State<HomePage>{
 
   @override
   void initState(){
-
     super.initState();
+    loadRecommendation();
+  }
+
+
+  List<CoinSet> coinsets = [];
+
+  loadRecommendation()async{
+    List<CoinSet> tempCoinsets = [];
+    List<dynamic> cs = (await CoinDex().getAllCoinSets())[0];
+    for(int i=0;i<cs.length;i++){
+      String name = cs[i][0];
+      List<dynamic> addressOfCoins = cs[i][1];
+
+      List<Coin>coins = [];
+      for(EthereumAddress address in addressOfCoins){
+        List<dynamic> nameAndSymbol = await CoinDex().getNameAndSymbol(address);
+        Coin coin = Coin(name: nameAndSymbol[0], symbol: nameAndSymbol[1], address: address.toString());
+        coins.add(coin);
+      }
+
+      double returns =0;
+      if(i == 0){
+        returns = 0.006;
+      }else{
+        returns = -0.021;
+      }
+      tempCoinsets.add(CoinSet(coins, name,returns));
+    }
+
+    setState(() {
+      coinsets = tempCoinsets;
+    });
   }
 
   @override
@@ -84,13 +119,6 @@ class HomePageState extends State<HomePage>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextButton(onPressed: (){
-            debugPrint('pressed');
-            //CoinDex().getAllCoinSets();
-            //CoinDex().getPortFolio();
-            //CoinDex().sell(0);
-            CoinDex().buy(0, BigInt.from(10));
-          }, child: const Text('Press')),
           GestureDetector(
             onTap: (){Navigator.push(
                 context,
@@ -135,15 +163,15 @@ class HomePageState extends State<HomePage>{
           GestureDetector(
             onTap: (){Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CoinsetDetailsScreen())
+                MaterialPageRoute(builder: (context) =>  CoinsetDetailsScreen(coinsets[0].getName(),coinsets[0].getCoins()))
             );},
             child: ReusableCard(
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                        "NFT",
+                     Text(
+                        coinsets[0].getName(),
                         style : TextStyle(
                           fontSize: 20,
                         )
@@ -157,7 +185,46 @@ class HomePageState extends State<HomePage>{
                             )
                         ),
                         Text(
-                            "14.26%",
+                            "0.006%",
+                            style:TextStyle(
+                                color: Colors.green,
+                                fontSize: 20
+                            )
+                        )
+                      ],
+                    )
+                  ],
+                )
+                ,90,22
+            ),
+          ),
+          const SizedBox(height:13),
+          GestureDetector(
+            onTap: (){Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  CoinsetDetailsScreen(coinsets[1].getName(),coinsets[1].getCoins()))
+            );},
+            child: ReusableCard(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                        coinsets[1].getName(),
+                        style : TextStyle(
+                          fontSize: 20,
+                        )
+                    ),
+                    Column(
+                      children: const [
+                        Text(
+                            "Returns",
+                            style:TextStyle(
+                                color : Color.fromRGBO(146, 145, 177, 1)
+                            )
+                        ),
+                        Text(
+                            "-0.021%",
                             style:TextStyle(
                                 color: Colors.red,
                                 fontSize: 20
@@ -171,40 +238,6 @@ class HomePageState extends State<HomePage>{
                 ,90,22
             ),
           ),
-          const SizedBox(height:13),
-          ReusableCard(
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                      "Metaverse",
-                      style : TextStyle(
-                        fontSize: 20,
-                      )
-                  ),
-                  Column(
-                    children: const [
-                      Text(
-                          "Returns",
-                          style:TextStyle(
-                              color : Color.fromRGBO(146, 145, 177, 1)
-                          )
-                      ),
-                      Text(
-                          "10%",
-                          style:TextStyle(
-                              color: Colors.green,
-                              fontSize: 20
-                          )
-                      )
-                    ],
-                  )
-
-                ],
-              )
-              ,90,22
-          )
         ],
       ),
     );

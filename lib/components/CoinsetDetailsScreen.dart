@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:coin_dex/models/Coin.dart';
 import 'package:flutter/material.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -7,10 +8,12 @@ import 'package:http/http.dart' as http;
 
 
 class CoinsetDetailsScreen extends StatefulWidget {
-  const CoinsetDetailsScreen({Key? key}) : super(key: key);
+  String coinsetName="";
+  List<Coin> coins = [];
+  CoinsetDetailsScreen(this.coinsetName,this.coins);
 
   @override
-  _CoinsetDetailsScreenState createState() => _CoinsetDetailsScreenState();
+  _CoinsetDetailsScreenState createState() => _CoinsetDetailsScreenState(coins);
 }
 
 class _CoinData{
@@ -27,11 +30,14 @@ class _CoinData{
 }
 
 class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
+  List<Coin> coins = [];
+  _CoinsetDetailsScreenState(this.coins);
+
   List<_CoinData> data = [];
   String percentageChange = "0";
-  List<String> coins = ["BTC","ETH"];
 
   late CrosshairBehavior _crosshairBehavior;
+
 
   @override
   void initState(){
@@ -41,15 +47,16 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
     );
     super.initState();
     loadCoinData();
-    print("hi");
   }
 
   void loadCoinData()async{
     List<_CoinData> coin_data = [];
 
     for(int j=0; j<coins.length;j++){
-
-      var res = await http.get(Uri.parse("https://luminous-florentine-4dc632.netlify.app/coinPriceHistory/" + coins[j]));
+      String symbol = (coins[j].getSymbol()).trim();
+      if(symbol=='eth')symbol = 'ETH';
+      if(symbol == 'wBTC') symbol = 'BTC';
+      var res = await http.get(Uri.parse("https://luminous-florentine-4dc632.netlify.app/coinPriceHistory/" + symbol));
       var result = json.decode(res.body);
       var price_history = result[0]['price_history'];
 
@@ -60,12 +67,14 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
         double price = price_history[i]['usd'];
         if(j==0)coin_data.add(_CoinData(string_date, price));
         else{
-          coin_data[j] = _CoinData(coin_data[j].getDate(), coin_data[j].getPrice() + price);
+          coin_data[i] = _CoinData(string_date, coin_data[i].getPrice() + price);
         }
       }
     }
 
+
     double first = coin_data[0].getPrice(), last = coin_data[coin_data.length - 1].getPrice();
+    print(first);
     double change = (last - first)/first ;
     print(change);
     setState(() {
@@ -89,10 +98,10 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Text(
-                          "NFT",
-                          style: TextStyle(fontSize: 32, fontWeight: FontWeight.w400),
+                          widget.coinsetName,
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
                         ),
                         Icon(Icons.share)
                       ],
@@ -149,47 +158,30 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Constituents",style: TextStyle(fontSize: 20),),
-                  SizedBox(height: 25,),
+                  SizedBox(height: 15),
                   Container(
                     margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
                     child: Table(
-                      children: [
-                        TableRow(
-                          children: [
-                            Text("Name",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1)),),
-                            Text("Holdings %",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1))),
-                            Text("1D change",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1)))
-                          ]
-                        ),
-                        TableRow(
+                        children:[TableRow(
                             children: [
-                              Text("Ethereum",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text("10",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text("14%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),)
+                              Text("Name",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1)),),
+                              Text("Holding %",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1))),
                             ]
-                        ),
-                        TableRow(
+                        )]
+
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                    child: Table(
+                      children:
+                        widget.coins.map((coin)=>TableRow(
                             children: [
-                              Text("NFT",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text("80",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text("12%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),)
+                              Text(coin.getName(),style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              Text((100 / widget.coins.length).toStringAsFixed(2)+ "%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
                             ]
-                        ),
-                        TableRow(
-                            children: [
-                              Text("NFT",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text("80",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text("12%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),)
-                            ]
-                        ),
-                        TableRow(
-                            children: [
-                              Text("NFT",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text("80",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text("12%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),)
-                            ]
-                        ),
-                      ],
+                        )).toList()
+
                     ),
                   )
                 ],

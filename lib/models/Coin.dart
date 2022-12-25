@@ -12,6 +12,14 @@ class Coin{
     address = address;
   }
 
+  getName(){
+    return this.name;
+  }
+  getSymbol(){
+    return this.symbol;
+  }
+
+
 }
 class CoinDisplayModel{
   List<Coin>? coins;

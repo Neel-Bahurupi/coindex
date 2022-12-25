@@ -31,7 +31,8 @@ class CoinDex{
     _getAllCoinSets = _contract.function("getAllCoinSets");
     List allCoinSets = await _client.call(contract: _contract, function: _getAllCoinSets, params: []);
     debugPrint('get all coinsets');
-    debugPrint(allCoinSets.toString());
+    // debugPrint(allCoinSets.toString());
+    return allCoinSets;
   }
 
   getPortFolio() async {
@@ -83,7 +84,7 @@ class CoinDex{
     debugPrint(buy.toString());
   }
 
-  getNameAndSymbol() async{
+  getNameAndSymbol(EthereumAddress value) async{
     _client = Web3Client(_rpcUrl, Client());
     _credentials = globals.connector.credentials;
     _abiCode = await rootBundle.loadString("assets/abi/abi.json");
@@ -91,7 +92,8 @@ class CoinDex{
         ContractAbi.fromJson(_abiCode, "CoinDex"), _contractAddress);
     _getTokenNameAndSymbol = _contract.function("getTokenNameAndSymbol");
 
-    List getTokenNameAndSymbol = await _client.call(contract: _contract, function: _getTokenNameAndSymbol, params: []);
-    debugPrint(getTokenNameAndSymbol.toString());
+    List getTokenNameAndSymbol = await _client.call(contract: _contract, function: _getTokenNameAndSymbol, params: [value]);
+    // debugPrint(getTokenNameAndSymbol.toString());
+    return getTokenNameAndSymbol;
   }
 }
