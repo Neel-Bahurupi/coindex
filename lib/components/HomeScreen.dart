@@ -120,6 +120,9 @@ class HomePageState extends State<HomePage>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          TextButton(onPressed: ()=>{
+              CoinDex().getPortFolio()
+          }, child: Text("Press")),
           GestureDetector(
             onTap: (){Navigator.push(
                 context,

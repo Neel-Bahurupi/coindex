@@ -41,8 +41,8 @@ dependencies:
   web3dart: ^2.3.5
   http: ^0.13.5
   web3_connect: ^0.0.3
-  flutter_easyloading: ^3.0.5
   loading_gifs: ^0.3.0
+  flutter_slidable: ^1.0.0
 
 dev_dependencies:
   flutter_test:

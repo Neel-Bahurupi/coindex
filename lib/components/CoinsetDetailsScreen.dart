@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:coin_dex/components/invest.dart';
 import 'package:coin_dex/models/Coin.dart';
 import 'package:flutter/material.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
@@ -193,7 +194,9 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
         child: TextButton(
           child: Text("Invest",style: TextStyle(color: Colors.white),),
           onPressed: (){
-            loadCoinData();
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Invest()));
           },
         ),
         color: Color.fromRGBO(31, 31, 57, 0.5),

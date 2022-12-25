@@ -1,6 +1,7 @@
 import 'package:coin_dex/components/ReusableCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class PortfolioScreen extends StatefulWidget {
   const PortfolioScreen({Key? key}) : super(key: key);
@@ -10,6 +11,11 @@ class PortfolioScreen extends StatefulWidget {
 }
 
 class _PortfolioScreenState extends State<PortfolioScreen> {
+
+  final void Function(BuildContext context) onSellPress = (BuildContext context)=>{
+    print("sell")
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,37 +79,39 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                   SizedBox(height: 40,),
                   Text("Investments",style: TextStyle(fontSize: 20),),
                   SizedBox(height: 20,),
-                  ReusableCard(
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Crypto blue chip",style: TextStyle(fontSize: 18),),
-                          Column(
+                  Slidable(
+                    key: const ValueKey(0),
+                    startActionPane: ActionPane(
+                      // A motion is a widget used to control how the pane animates.
+                      motion: const ScrollMotion(),
+                      // All actions are defined in the children parameter.
+                      children:  [
+                        // A SlidableAction can have an icon and/or a label.
+                        SlidableAction(
+                          onPressed: onSellPress,
+                          backgroundColor: Color(0xFFFE4A49),
+                          foregroundColor: Colors.white,
+                          label: 'Sell',
+                        )
+                      ],
+                    ),
+                      child: ReusableCard(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("\$220",style: TextStyle(fontSize: 20),),
-                              Text("-14.2%",style: TextStyle(fontSize: 16,color: Colors.green),)
+                              Text("Crypto blue chip",style: TextStyle(fontSize: 18),),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("\$220",style: TextStyle(fontSize: 20),),
+                                  Text("-14.2%",style: TextStyle(fontSize: 16,color: Colors.green),)
+                                ],
+                              )
                             ],
-                          )
-                        ],
-                      ),
-                      92, 20),
+                          ),
+                          92, 20),
+                  ),
                   SizedBox(height: 8,),
-                  ReusableCard(
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Metaverse",style: TextStyle(fontSize: 18),),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("\$500",style: TextStyle(fontSize: 20),),
-                              Text("-14.2%",style: TextStyle(fontSize: 16,color: Colors.red),)
-                            ],
-                          )
-                        ],
-                      ),
-                      92, 20),
                 ],
               ),
             )
