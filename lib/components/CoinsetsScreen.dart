@@ -4,6 +4,7 @@ import 'package:coin_dex/models/Coin.dart';
 import 'package:coin_dex/models/CoinSet.dart';
 import 'package:coin_dex/services/smart_contract_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_gifs/loading_gifs.dart';
 import 'package:web3dart/credentials.dart';
 
 class Coinsets extends StatefulWidget {
@@ -23,6 +24,7 @@ class _CoinsetsState extends State<Coinsets> {
   void initState(){
     super.initState();
     loadCoinset();
+    print(coinsets.length);
   }
 
   void loadCoinset()async{
@@ -69,7 +71,7 @@ class _CoinsetsState extends State<Coinsets> {
           Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: coinsets.map(
+              children: (coinsets.length > 0 ? coinsets.map(
                     (coinset) =>
                         GestureDetector(
                           onTap: (){Navigator.push(
@@ -80,11 +82,26 @@ class _CoinsetsState extends State<Coinsets> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(coinset.getName(),style: TextStyle(fontSize: 18),),
-                                  Text(coinset.getReturns().toString(),style: TextStyle(fontSize: 16,color: (coinset.getReturns() <0 ? Colors.red: Colors.green)),)
+                                  Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children : [
+                                        Text(
+                                            "Returns",
+                                            style:TextStyle(
+                                                color : Color.fromRGBO(146, 145, 177, 1)
+                                            )),
+                                        Text(
+                                          coinset.getReturns().toString() + "%",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: (coinset.getReturns() <0 ? Colors.red: Colors.green)),
+                                        )
+                                      ]
+                                  )
                                 ],
                               ),
                               92, 20),
-                        ),).toList())
+                        ),).toList() : [Image.asset(circularProgressIndicator, scale: 10)]))
             ),
 
         ],

@@ -74,9 +74,7 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
 
 
     double first = coin_data[0].getPrice(), last = coin_data[coin_data.length - 1].getPrice();
-    print(first);
     double change = (last - first)/first ;
-    print(change);
     setState(() {
       data = coin_data;
       percentageChange = change.toStringAsFixed(3);

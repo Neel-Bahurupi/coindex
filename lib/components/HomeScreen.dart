@@ -4,6 +4,7 @@ import 'package:coin_dex/models/Coin.dart';
 import 'package:coin_dex/models/CoinSet.dart';
 import 'package:coin_dex/services/smart_contract_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_gifs/loading_gifs.dart';
 import 'package:web3dart/credentials.dart';
 import 'CoinsetsScreen.dart';
 import "ReusableCard.dart";
@@ -87,7 +88,7 @@ class HomePageState extends State<HomePage>{
   loadRecommendation()async{
     List<CoinSet> tempCoinsets = [];
     List<dynamic> cs = (await CoinDex().getAllCoinSets())[0];
-    for(int i=0;i<cs.length;i++){
+    for(int i=0;i<2;i++){
       String name = cs[i][0];
       List<dynamic> addressOfCoins = cs[i][1];
 
@@ -159,85 +160,43 @@ class HomePageState extends State<HomePage>{
               )
           ),
           const SizedBox(height:11),
-
-          GestureDetector(
-            onTap: (){Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) =>  CoinsetDetailsScreen(coinsets[0].getName(),coinsets[0].getCoins()))
-            );},
-            child: ReusableCard(
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                     Text(
-                        coinsets[0].getName(),
-                        style : TextStyle(
-                          fontSize: 20,
-                        )
-                    ),
-                    Column(
-                      children: const [
-                        Text(
-                            "Returns",
-                            style:TextStyle(
-                                color : Color.fromRGBO(146, 145, 177, 1)
-                            )
+          Column(
+            children: (coinsets.length > 0 ? coinsets.map(
+                  (coinset) =>
+                  GestureDetector(
+                    onTap: (){Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CoinsetDetailsScreen(coinset.getName(), coinset.getCoins())));},
+                    child: ReusableCard(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(coinset.getName(),style: TextStyle(fontSize: 18),),
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children : [
+                                  Text(
+                                      "Returns",
+                                      style:TextStyle(
+                                          color : Color.fromRGBO(146, 145, 177, 1)
+                                      )),
+                                  Text(
+                                    coinset.getReturns().toString() + "%",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: (coinset.getReturns() <0 ? Colors.red: Colors.green)),
+                                  )
+                                ]
+                              )
+                          ],
                         ),
-                        Text(
-                            "0.006%",
-                            style:TextStyle(
-                                color: Colors.green,
-                                fontSize: 20
-                            )
-                        )
-                      ],
-                    )
-                  ],
-                )
-                ,90,22
-            ),
+                        92, 20),
+                  ),).toList() : [Padding(
+                    padding: const EdgeInsets.fromLTRB(0,100,0,0),
+                    child: Image.asset(circularProgressIndicator, scale: 10),
+                  )])
           ),
-          const SizedBox(height:13),
-          GestureDetector(
-            onTap: (){Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) =>  CoinsetDetailsScreen(coinsets[1].getName(),coinsets[1].getCoins()))
-            );},
-            child: ReusableCard(
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        coinsets[1].getName(),
-                        style : TextStyle(
-                          fontSize: 20,
-                        )
-                    ),
-                    Column(
-                      children: const [
-                        Text(
-                            "Returns",
-                            style:TextStyle(
-                                color : Color.fromRGBO(146, 145, 177, 1)
-                            )
-                        ),
-                        Text(
-                            "-0.021%",
-                            style:TextStyle(
-                                color: Colors.red,
-                                fontSize: 20
-                            )
-                        )
-                      ],
-                    )
 
-                  ],
-                )
-                ,90,22
-            ),
-          ),
         ],
       ),
     );
