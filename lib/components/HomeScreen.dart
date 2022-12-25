@@ -1,5 +1,6 @@
 import 'package:coin_dex/components/PortfolioScreen.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
+import 'package:coin_dex/services/smart_contract_functions.dart';
 import 'package:flutter/material.dart';
 import 'CoinsetsScreen.dart';
 import "ReusableCard.dart";
@@ -69,6 +70,13 @@ class HomePage extends StatefulWidget{
 }
 
 class HomePageState extends State<HomePage>{
+
+  @override
+  void initState(){
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,6 +84,13 @@ class HomePageState extends State<HomePage>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          TextButton(onPressed: (){
+            debugPrint('pressed');
+            //CoinDex().getAllCoinSets();
+            //CoinDex().getPortFolio();
+            //CoinDex().sell(0);
+            CoinDex().buy(0, BigInt.from(10));
+          }, child: const Text('Press')),
           GestureDetector(
             onTap: (){Navigator.push(
                 context,
