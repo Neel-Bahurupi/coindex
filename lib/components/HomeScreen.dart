@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coin_dex/components/PortfolioScreen.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
 import 'package:coin_dex/models/Coin.dart';
@@ -8,7 +10,10 @@ import 'package:loading_gifs/loading_gifs.dart';
 import 'package:web3dart/credentials.dart';
 import 'CoinsetsScreen.dart';
 import "ReusableCard.dart";
+import 'dart:convert';
 import "CoinsetDetailsScreen.dart";
+import 'package:http/http.dart' as http;
+import 'package:coin_dex/components/CoinsetsScreen.dart' as css;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -31,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
     const HomePage(),
     const Coinsets()
   ];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,19 +83,48 @@ class HomePage extends StatefulWidget{
 
 class HomePageState extends State<HomePage>{
 
+  double portfolioAmount = 0;
+  String baseurl = 'https://luminous-florentine-4dc632.netlify.app/coinPrice/avax';
+  double price = 0.00;
+
+
+
+  getPortfolio()async{
+    double totalCoins = ((await CoinDex().getPortFolioAmount())[0]);
+    debugPrint('total coins');
+    debugPrint(totalCoins.toString());
+    setState(() {
+      portfolioAmount=price*totalCoins;
+    });
+  }
+
   @override
   void initState(){
+    getCoinPrice();
+    getPortfolio();
     super.initState();
-    loadRecommendation();
   }
 
 
   List<CoinSet> coinsets = [];
 
-  loadRecommendation()async{
+  getCoinPrice() async{
+    Uri uri = Uri.parse(baseurl);
+    dynamic response;
+    try{
+      response = await http.get(uri);
+    }on TimeoutException catch(_){
+      print("Time Out Exception");
+      throw Exception("Failed to load data");
+    }
+    debugPrint(response.body);
+    price=json.decode(response.body)['usd']??0;
+  }
+
+  void loadCoinset()async{
     List<CoinSet> tempCoinsets = [];
     List<dynamic> cs = (await CoinDex().getAllCoinSets())[0];
-    for(int i=0;i<2;i++){
+    for(int i=0;i<cs.length;i++){
       String name = cs[i][0];
       List<dynamic> addressOfCoins = cs[i][1];
 
@@ -98,8 +134,7 @@ class HomePageState extends State<HomePage>{
         Coin coin = Coin(name: nameAndSymbol[0], symbol: nameAndSymbol[1], address: address.toString());
         coins.add(coin);
       }
-
-      double returns =0;
+      double returns = 0;
       if(i == 0){
         returns = 0.006;
       }else{
@@ -111,6 +146,8 @@ class HomePageState extends State<HomePage>{
     setState(() {
       coinsets = tempCoinsets;
     });
+
+    // print(c.getName());
   }
 
   @override
@@ -120,33 +157,44 @@ class HomePageState extends State<HomePage>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextButton(onPressed: ()=>{
-              CoinDex().getPortFolio()
-          }, child: Text("Press")),
+          // TextButton(onPressed: ()=>{
+          //   CoinDex().getAllCoinSets()
+          //   //CoinDex().buy(0, BigInt.from(10))
+          // }, child: Text("Press")),
           GestureDetector(
             onTap: (){Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const PortfolioScreen())
+                MaterialPageRoute(builder: (context) => PortfolioScreen(portfolio: 0,))
             );
             },
             child: ReusableCard(
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start ,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
-                    Text(
+                  children:  [
+                    const Text(
                       "My Account",
                       style: TextStyle(
                           fontSize: 20,
                           color: Color.fromRGBO(146, 145, 177, 1)
                       ),
                     ),
-                    Text(
-                      "\$1200",
-                      style: TextStyle(
-                          fontSize: 32,
-                          color:Color.fromRGBO(212, 212, 212, 1)
-                      ),
+                    Row(
+                      children: [
+                        const Text('\$',
+                            style: TextStyle(
+                                fontSize: 32,
+                                color:Color.fromRGBO(212, 212, 212, 1)
+                            )
+                        ),
+                        Text(
+                          '${portfolioAmount}',
+                          style: const TextStyle(
+                              fontSize: 32,
+                              color:Color.fromRGBO(212, 212, 212, 1)
+                          ),
+                        )
+                      ],
                     )
                   ],
                 ),
@@ -178,7 +226,7 @@ class HomePageState extends State<HomePage>{
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children : [
-                                  Text(
+                                  const Text(
                                       "Returns",
                                       style:TextStyle(
                                           color : Color.fromRGBO(146, 145, 177, 1)

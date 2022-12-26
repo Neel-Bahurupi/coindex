@@ -102,7 +102,7 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
                           widget.coinsetName,
                           style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
                         ),
-                        Icon(Icons.share)
+                        //Icon(Icons.share)
                       ],
                     ),
                     const SizedBox(height: 25),

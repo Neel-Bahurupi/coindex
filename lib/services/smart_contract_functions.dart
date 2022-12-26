@@ -8,11 +8,12 @@ class CoinDex{
 
   late Web3Client _client;
   String _abiCode = '';
+  //final String _rpcUrl = 'https://rpc-mumbai.matic.today/';
   final String _rpcUrl = 'https://api.avax-test.network/ext/bc/C/rpc';
 
-  Credentials _credentials = globals.connector.credentials;
+  late Credentials _credentials ;
   final EthereumAddress _contractAddress =
-  EthereumAddress.fromHex('0x275B517A2d8C46125af2FF14D945e3F15d3071ec');
+  EthereumAddress.fromHex('0xDaF6Ca1E5A73ac4C94529AAFbb21cbEe5948ebb0');
   //late EthereumAddress _ownAddress;
   late DeployedContract _contract;
 
@@ -30,22 +31,38 @@ class CoinDex{
         ContractAbi.fromJson(_abiCode, "CoinDex"), _contractAddress);
     _getAllCoinSets = _contract.function("getAllCoinSets");
     List allCoinSets = await _client.call(contract: _contract, function: _getAllCoinSets, params: []);
-    debugPrint('get all coinsets');
+    debugPrint(allCoinSets.toString());
     // debugPrint(allCoinSets.toString());
     return allCoinSets;
   }
 
-  getPortFolio() async {
+  getPortFolioAmount() async {
     _client = Web3Client(_rpcUrl, Client());
     _credentials = globals.connector.credentials;
     _abiCode = await rootBundle.loadString("assets/abi/abi.json");
     _contract = DeployedContract(
         ContractAbi.fromJson(_abiCode, "CoinDex"), _contractAddress);
-    _getPortfolio = _contract.function("getPortfolio");
+    _getPortfolio = _contract.function("getPortfolioValue");
 
     List portfolio = await _client.call(contract: _contract, function: _getPortfolio, params: []);
     debugPrint(portfolio.toString());
+    return portfolio;
   }
+
+  getPortFolioAllCoins() async {
+    _client = Web3Client(_rpcUrl, Client());
+    _credentials = globals.connector.credentials;
+    _abiCode = await rootBundle.loadString("assets/abi/abi.json");
+    _contract = DeployedContract(
+        ContractAbi.fromJson(_abiCode, "CoinDex"), _contractAddress);
+    _getPortfolio = _contract.function("getInvestedCoin");
+
+    List portfolio = await _client.call(contract: _contract, function: _getPortfolio, params: []);
+    debugPrint(portfolio.toString());
+    return portfolio;
+  }
+
+
 
   sell(int index) async {
     _client = Web3Client(_rpcUrl, Client());
@@ -67,6 +84,7 @@ class CoinDex{
         ContractAbi.fromJson(_abiCode, "CoinDex"), _contractAddress);
     _buy = _contract.function("investInCoinSet");
     var address = EthereumAddress.fromHex(globals.connector.session!.accounts[0]);
+    debugPrint(address.toString());
 
     String? buy = await _client.sendTransaction(
       _credentials,
@@ -75,8 +93,6 @@ class CoinDex{
         function: _buy,
         parameters: [BigInt.from(index)],
         from: address,
-        gasPrice: EtherAmount.inWei(BigInt.one),
-        maxGas: 500000,
         value: EtherAmount.fromUnitAndValue(EtherUnit.finney, value),
       ),
     );
@@ -86,7 +102,7 @@ class CoinDex{
 
   getNameAndSymbol(EthereumAddress value) async{
     _client = Web3Client(_rpcUrl, Client());
-    _credentials = globals.connector.credentials;
+    //_credentials = globals.connector.credentials;
     _abiCode = await rootBundle.loadString("assets/abi/abi.json");
     _contract = DeployedContract(
         ContractAbi.fromJson(_abiCode, "CoinDex"), _contractAddress);

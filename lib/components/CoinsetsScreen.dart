@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:loading_gifs/loading_gifs.dart';
 import 'package:web3dart/credentials.dart';
 
+List<CoinSet> coinsets = [] ;
+
 class Coinsets extends StatefulWidget {
   const Coinsets({Key? key}) : super(key: key);
 
@@ -17,8 +19,6 @@ class Coinsets extends StatefulWidget {
 
 
 class _CoinsetsState extends State<Coinsets> {
-
-  List<CoinSet> coinsets = [] ;
 
   @override
   void initState(){

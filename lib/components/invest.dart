@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../services/smart_contract_functions.dart';
+
 class Invest extends StatefulWidget {
   const Invest({Key? key}) : super(key: key);
 
@@ -38,7 +40,9 @@ class _InvestState extends State<Invest> {
               ),
               SizedBox(height: 20,),
               TextButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    CoinDex().buy(0, BigInt.from(int.parse(inputValue)));
+                  },
                   child: Text("Invest",style: TextStyle(color: Colors.white),),
                   style: TextButton.styleFrom(
                       backgroundColor: Color.fromRGBO(31, 31, 57, 1),
