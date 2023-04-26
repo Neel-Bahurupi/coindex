@@ -6,6 +6,8 @@ import 'package:coin_dex/components/CoinsetsScreen.dart' as cs;
 import '../models/CoinSet.dart';
 import '../services/smart_contract_functions.dart';
 
+List<CoinSet> pcs = [];
+
 class PortfolioScreen extends StatefulWidget {
   double portfolio = 0;
   PortfolioScreen({Key? key,required this.portfolio}) : super(key: key);
@@ -16,11 +18,6 @@ class PortfolioScreen extends StatefulWidget {
 
 class _PortfolioScreenState extends State<PortfolioScreen> {
 
-  final void Function(BuildContext context) onSellPress = (BuildContext context)=>{
-    print("sell")
-  };
-
-  List<CoinSet> pcs = [];
 
   getPortfolio()async{
     List<CoinSet> tempCoinsets = [];
@@ -31,6 +28,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     tempCoinsets.add(cs.coinsets[j]);
     }
     tempCoinsets.add(cs.coinsets[0]);
+    //tempCoinsets.add(cs.coinsets[1]);
     setState(() {
       pcs=tempCoinsets;
     });
@@ -47,103 +45,110 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body:SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const BackButton(),
-            Container(
-              margin: EdgeInsets.all(22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ReusableCard(
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "My portfolio",
-                        style: TextStyle(color: Color.fromRGBO(146, 145, 177, 1),fontSize: 20),
-                      ),
-                      SizedBox(height:20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const BackButton(),
+              Container(
+                margin: EdgeInsets.all(22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: ReusableCard(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "\$${widget.portfolio}",
-                            style: TextStyle(fontSize: 32),
+                            "My portfolio",
+                            style: TextStyle(color: Color.fromRGBO(146, 145, 177, 1),fontSize: 20),
                           ),
-                          Row(
-                            children: [
-                              Icon(Icons.arrow_drop_down,color: Colors.red,),
-                              Text("14%",style: TextStyle(fontSize: 20,color: Colors.red)),
-                            ],
-                          )
-                        ],
-                      ),
-                      SizedBox(height: 10,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            children: [
-                              Text("Invested",style: TextStyle(fontSize: 20,color: Color.fromRGBO(146, 145, 177, 1)),),
-                              SizedBox(height: 10,),
-                              Text("\$146.22",style: TextStyle(fontSize: 20))
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text("Available",style: TextStyle(fontSize: 20,color: Color.fromRGBO(146, 145, 177, 1)),),
-                              //SizedBox(height: 10,),
-                              Text("\$146.22",style: TextStyle(fontSize: 20))
-                            ],
-                          )
-                        ],
-                      )
-                    ],
-                  )
-                  , 210, 20),
-                  SizedBox(height: 40,),
-                  Text("Investments",style: TextStyle(fontSize: 20),),
-                  SizedBox(height: 20,),
-                  for(int i=0;i<pcs.length;i++)
-                    Slidable(
-                      key: const ValueKey(0),
-                      startActionPane: ActionPane(
-                        // A motion is a widget used to control how the pane animates.
-                        motion: const ScrollMotion(),
-                        // All actions are defined in the children parameter.
-                        children:  [
-                          // A SlidableAction can have an icon and/or a label.
-                          SlidableAction(
-                            onPressed: onSellPress,
-                            backgroundColor: Color(0xFFFE4A49),
-                            foregroundColor: Colors.white,
-                            label: 'Sell',
-                          )
-                        ],
-                      ),
-                      child: ReusableCard(
+                          SizedBox(height:20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("${pcs[i].name}",style: TextStyle(fontSize: 18),),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("\$220",style: TextStyle(fontSize: 20),),
-                                  Text("-14.2%",style: TextStyle(fontSize: 16,color: Colors.green),)
-                                ],
-                              )
+                              Text(
+                                "\$${widget.portfolio.toStringAsFixed(2)}                         ",
+                                style: TextStyle(fontSize: 32),
+                              ),
+                              // Row(
+                              //   children: [
+                              //     Icon(Icons.arrow_drop_down,color: Colors.red,),
+                              //     Text("14%",style: TextStyle(fontSize: 20,color: Colors.red)),
+                              //   ],
+                              // )
                             ],
                           ),
-                          92, 20),
+                          //SizedBox(height: 10,),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     Column(
+                          //       children: [
+                          //         Text("Invested",style: TextStyle(fontSize: 20,color: Color.fromRGBO(146, 145, 177, 1)),),
+                          //         SizedBox(height: 10,),
+                          //         Text("\$146.22",style: TextStyle(fontSize: 20))
+                          //       ],
+                          //     ),
+                          //     Column(
+                          //       children: [
+                          //         Text("Available",style: TextStyle(fontSize: 20,color: Color.fromRGBO(146, 145, 177, 1)),),
+                          //         //SizedBox(height: 10,),
+                          //         Text("\$146.22",style: TextStyle(fontSize: 20))
+                          //       ],
+                          //     )
+                          //   ],
+                          // )
+                        ],
+                      )
+                      , 150, 20),
                     ),
-                  SizedBox(height: 8,),
-                ],
-              ),
-            )
-          ],
+                    SizedBox(height: 40,),
+                    Text("Investments",style: TextStyle(fontSize: 20),),
+                    SizedBox(height: 20,),
+                    for(int i=0;i<pcs.length;i++)
+                      Slidable(
+                        key: const ValueKey(0),
+                        startActionPane: ActionPane(
+                          // A motion is a widget used to control how the pane animates.
+                          motion: const ScrollMotion(),
+                          // All actions are defined in the children parameter.
+                          children:  [
+                            // A SlidableAction can have an icon and/or a label.
+                            SlidableAction(
+                              onPressed: (BuildContext c){
+                                CoinDex().sell(i);
+                              },
+                              backgroundColor: Color(0xFFFE4A49),
+                              foregroundColor: Colors.white,
+                              label: 'Sell',
+                            )
+                          ],
+                        ),
+                        child: ReusableCard(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("${pcs[i].name}",style: TextStyle(fontSize: 18),),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("${widget.portfolio.toStringAsFixed(2)}",style: TextStyle(fontSize: 20),),
+                                    Text("0%",style: TextStyle(fontSize: 16,color: Colors.green),)
+                                  ],
+                                )
+                              ],
+                            ),
+                            92, 20),
+                      ),
+                    SizedBox(height: 8,),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       )
     );

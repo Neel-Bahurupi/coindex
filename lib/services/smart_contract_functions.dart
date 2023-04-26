@@ -22,6 +22,7 @@ class CoinDex{
   late ContractFunction _sell;
   late ContractFunction _buy;
   late ContractFunction _getTokenNameAndSymbol;
+  late ContractFunction _getPortfolioAmount;
 
   getAllCoinSets() async {
     _client = Web3Client(_rpcUrl, Client());
@@ -42,9 +43,9 @@ class CoinDex{
     _abiCode = await rootBundle.loadString("assets/abi/abi.json");
     _contract = DeployedContract(
         ContractAbi.fromJson(_abiCode, "CoinDex"), _contractAddress);
-    _getPortfolio = _contract.function("getPortfolioValue");
+    _getPortfolioAmount = _contract.function("getPortfolioValue");
 
-    List portfolio = await _client.call(contract: _contract, function: _getPortfolio, params: []);
+    List portfolio = await _client.call(contract: _contract, function: _getPortfolioAmount, params: []);
     debugPrint(portfolio.toString());
     return portfolio;
   }

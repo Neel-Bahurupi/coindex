@@ -43,8 +43,14 @@ class _CoinsetsState extends State<Coinsets> {
       double returns = 0;
       if(i == 0){
         returns = 0.006;
-      }else{
+      }else if(i==1){
         returns = -0.021;
+      }else if(i==2){
+        returns = -0.09;
+      }else if(i==3){
+        returns = 0.019;
+      }else{
+        returns = 0.011;
       }
       tempCoinsets.add(CoinSet(coins, name,returns));
     }

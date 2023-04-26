@@ -1,11 +1,11 @@
 import 'dart:convert';
-
 import 'package:coin_dex/components/invest.dart';
 import 'package:coin_dex/models/Coin.dart';
 import 'package:flutter/material.dart';
 import 'package:coin_dex/components/ReusableCard.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
+import 'package:coin_dex/components/CoinsetsScreen.dart' as cs;
 
 
 class CoinsetDetailsScreen extends StatefulWidget {
@@ -38,6 +38,13 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
   String percentageChange = "0";
 
   late CrosshairBehavior _crosshairBehavior;
+  int index=0;
+   getIndex(){
+     for(int i=0;i<cs.coinsets.length;i++){
+       if(cs.coinsets[i].name==widget.coinsetName)
+         index=i;
+     }
+   }
 
 
   @override
@@ -87,108 +94,112 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const BackButton(),
-            Container(
-                margin: const EdgeInsets.all(22),
-                child : Column(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const BackButton(),
+              Container(
+                  margin: const EdgeInsets.all(22),
+                  child : Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            widget.coinsetName,
+                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+                          ),
+                          //Icon(Icons.share)
+                        ],
+                      ),
+                      const SizedBox(height: 25),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ReusableCard(
+                              Row(
+                                children: const [
+                                  Icon(Icons.people_alt_outlined),
+                                  SizedBox(width: 5),
+                                  Text("0",style: TextStyle(fontSize: 18),),
+                                  Text("investors", style: TextStyle(
+                                    color: Color.fromRGBO(146, 145, 177, 1),
+                                    fontSize: 10
+                                  ),)
+                                ],
+                              ),
+                              50,
+                              12),
+                          ReusableCard(
+                              Row(
+                                children:  [
+                                  Icon((double.parse(percentageChange) < 0 ? Icons.arrow_drop_down : Icons.arrow_drop_up),color: ((double.parse(percentageChange) < 0 ? Colors.red : Colors.green))),
+                                  Text(percentageChange, style: TextStyle(fontSize: 18,color: (double.parse(percentageChange) < 0 ? Colors.red : Colors.green) )),
+                                ],
+                              ),
+                              50,
+                              12)
+                        ],
+                      )
+                    ],
+                  )
+              ),
+              SfCartesianChart(
+                  crosshairBehavior: _crosshairBehavior,
+                  tooltipBehavior: TooltipBehavior(enable: true),
+
+                  primaryXAxis: CategoryAxis(isVisible:false),
+                  series: <ChartSeries<_CoinData, String>>[
+                    LineSeries<_CoinData, String>(
+                        dataSource: data,
+                        xValueMapper: (_CoinData price, _) => price.date,
+                        yValueMapper: (_CoinData price, _) => price.price,
+                        name: 'Price',
+                        // Enable data label
+                        dataLabelSettings: const DataLabelSettings(isVisible: false))
+                  ]),
+              Container(
+                margin: EdgeInsets.all(22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          widget.coinsetName,
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-                        ),
-                        //Icon(Icons.share)
-                      ],
+                    Text("Constituents",style: TextStyle(fontSize: 20),),
+                    SizedBox(height: 15),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                      child: Table(
+                          children:[TableRow(
+                              children: [
+                                Text("Name",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1)),),
+                                Text("Holding %",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1))),
+                              ]
+                          )]
+
+                      ),
                     ),
-                    const SizedBox(height: 25),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ReusableCard(
-                            Row(
-                              children: const [
-                                Icon(Icons.people_alt_outlined),
-                                SizedBox(width: 5),
-                                Text("22.4K ",style: TextStyle(fontSize: 18),),
-                                Text("investors", style: TextStyle(
-                                  color: Color.fromRGBO(146, 145, 177, 1),
-                                  fontSize: 10
-                                ),)
-                              ],
-                            ),
-                            50,
-                            12),
-                        ReusableCard(
-                            Row(
-                              children:  [
-                                Icon((double.parse(percentageChange) < 0 ? Icons.arrow_drop_down : Icons.arrow_drop_up),color: ((double.parse(percentageChange) < 0 ? Colors.red : Colors.green))),
-                                Text(percentageChange, style: TextStyle(fontSize: 18,color: (double.parse(percentageChange) < 0 ? Colors.red : Colors.green) )),
-                              ],
-                            ),
-                            50,
-                            12)
-                      ],
+                    Container(
+                      margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                      child: Table(
+                        children:
+                          widget.coins.map((coin)=>TableRow(
+                              children: [
+                                Text(coin.getName(),style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                                Text((100 / widget.coins.length).toStringAsFixed(2)+ "%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
+                              ]
+                          )).toList()
+
+                      ),
                     )
                   ],
-                )
-            ),
-            SfCartesianChart(
-                crosshairBehavior: _crosshairBehavior,
-                tooltipBehavior: TooltipBehavior(enable: true),
-
-                primaryXAxis: CategoryAxis(isVisible:false),
-                series: <ChartSeries<_CoinData, String>>[
-                  LineSeries<_CoinData, String>(
-                      dataSource: data,
-                      xValueMapper: (_CoinData price, _) => price.date,
-                      yValueMapper: (_CoinData price, _) => price.price,
-                      name: 'Price',
-                      // Enable data label
-                      dataLabelSettings: const DataLabelSettings(isVisible: false))
-                ]),
-            Container(
-              margin: EdgeInsets.all(22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Constituents",style: TextStyle(fontSize: 20),),
-                  SizedBox(height: 15),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                    child: Table(
-                        children:[TableRow(
-                            children: [
-                              Text("Name",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1)),),
-                              Text("Holding %",style: TextStyle(fontSize: 16,color: Color.fromRGBO(146, 145, 177, 1))),
-                            ]
-                        )]
-
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                    child: Table(
-                      children:
-                        widget.coins.map((coin)=>TableRow(
-                            children: [
-                              Text(coin.getName(),style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                              Text((100 / widget.coins.length).toStringAsFixed(2)+ "%",style: TextStyle(height: 2.5,color: Color.fromRGBO(212, 212, 212, 0.61)),),
-                            ]
-                        )).toList()
-
-                    ),
-                  )
-                ],
+                ),
               ),
-            )
-          ],
+              SizedBox(height: 35,),
+            ],
+          ),
         ),
       ),
+
       bottomSheet: Container(
         width: MediaQuery.of(context).size.width,
         child: TextButton(
@@ -196,12 +207,11 @@ class _CoinsetDetailsScreenState extends State<CoinsetDetailsScreen> {
           onPressed: (){
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Invest()));
+                MaterialPageRoute(builder: (context) => Invest(index: index,)));
           },
         ),
         color: Color.fromRGBO(31, 31, 57, 0.5),
       ),
-
     );
   }
 }
